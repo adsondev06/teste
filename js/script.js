@@ -118,4 +118,4 @@ codeInput.addEventListener('input', function() {
         playErrorSound();
     }
     this.value = '';
-});
+})
