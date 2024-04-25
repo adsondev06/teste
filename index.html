@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -8,14 +8,14 @@
 </head>
 
 <body> 
-    <h1>Coletor de código 4</h1>
+    <h1>Coletor de código</h1>
     <p class="alerta">Se não iniciar a leitura, atualize a página!</p>
-    Adicionando o input de número com o placeholder desejado
-    <input type="number" id="codeInput" placeholder="Não conseguiu ler? Digite aqui">
-    <div id="barcode-results">
-    </div>
+    <video id="video" playsinline></video>
+    <input type="number" id="codeInput" placeholder="Não conseguiu ler? Digite aqui" />
+    <div id="barcode-results"></div>
     <p id="codeCount">Códigos lidos: <span id="count">0</span></p>
     <div class="button-container">
+        <button id="reloadButton" class="button" onclick="reloadPage()">Atualizar Página</button>
         <button id="sendToWhatsAppButton" class="button" onclick="sendToWhatsApp()">Enviar para WhatsApp</button>
     </div>
 
@@ -24,135 +24,5 @@
 
 
     <script src="js/script.js"></script>
-</body>
-</html> -->
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/estilos.css">
-    <title>Coletor</title>
-</head>
-<body>
-    <h1>1234</h1>
-    <p class="alerta">Se não iniciar a leitura, atualize a página!</p>
-    <video id="video" playsinline></video>
-    <input type="number" id="codeInput" placeholder="Não conseguiu ler? Digite aqui" />
-    <div id="barcode-results"></div>
-    <p id="codeCount">Códigos lidos: <span id="count">0</span></p>
-    <div class="button-container">
-        <button id="sendToWhatsAppButton" class="button" onclick="sendToWhatsApp()">Enviar para WhatsApp</button>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
-    <script>
-        const barcodeResults = document.getElementById('barcode-results');
-const codeCount = document.getElementById('count');
-const successSound = document.getElementById('successSound');
-const errorSound = document.getElementById('errorSound');
-const codeInput = document.getElementById('codeInput');
-let detectedBarcodes = [];
-let codeCounter = 0;
-let errorDisplayed = false;
-let video;
-
-async function startBarcodeReader() {
-    try {
-        video = document.getElementById('video');
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        video.srcObject = stream;
-        await video.play();
-        console.log("Câmera ativada com sucesso!");
-        Quagga.init({
-            inputStream: {
-                name: "Live",
-                type: "LiveStream",
-                target: document.querySelector('#video'),
-                constraints: {
-                    facingMode: "environment"
-                },
-            },
-            
-        }, function (err) {
-            if (err) {
-                console.error('Erro ao inicializar Quagga:', err);
-                displayMessage('Erro ao iniciar a leitura do código de barras.', 'error');
-                return;
-            }
-            Quagga.start();
-        });
-
-        Quagga.onDetected(function (result) {
-            const code = result.codeResult.code;
-            if (code.length === 10 && !detectedBarcodes.includes(code)) {
-                detectedBarcodes.push(code);
-                const resultDiv = document.createElement('div');
-                resultDiv.textContent = "Lido com sucesso: " + code;
-                resultDiv.classList.add('success');
-                barcodeResults.appendChild(resultDiv);
-                codeCount.textContent = detectedBarcodes.length;
-                playSuccessSound();
-                codeCounter++;
-                if (codeCounter === 3) {
-                    barcodeResults.style.overflowY = 'scroll';
-                }
-            }
-        });
-    } catch (error) {
-        console.error('Erro ao iniciar a leitura do código de barras:', error);
-        displayMessage('Erro ao iniciar a leitura do código de barras.', 'error');
-    }
-}
-
-function sendToWhatsApp() {
-    const whatsappMessage = "Códigos lidos: *" + detectedBarcodes.length + "*\n\n" + detectedBarcodes.join("\n");
-    window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(whatsappMessage), "_blank");
-}
-
-function playSuccessSound() {
-    successSound.play();
-}
-
-function playErrorSound() {
-    errorSound.play();
-}
-
-function displayMessage(message, type) {
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = message;
-    messageDiv.classList.add(type);
-    barcodeResults.appendChild(messageDiv);
-    barcodeResults.scrollTop = barcodeResults.scrollHeight;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    startBarcodeReader();
-});
-
-codeInput.addEventListener('keyup', function(event) {
-    if (event.key === 'Enter') {
-        const inputValue = this.value.trim();
-        if (inputValue.length > 0 && inputValue.length <= 10 && !detectedBarcodes.includes(inputValue)) {
-            detectedBarcodes.push(inputValue);
-            const resultDiv = document.createElement('div');
-            resultDiv.textContent = "Digitado manualmente: " + inputValue;
-            resultDiv.classList.add('success');
-            barcodeResults.appendChild(resultDiv);
-            codeCount.textContent = detectedBarcodes.length;
-            playSuccessSound();
-            codeCounter++;
-            if (codeCounter === 3) {
-                barcodeResults.style.overflowY = 'scroll';
-            }
-        } else {
-            displayMessage('Valor inválido ou já inserido.', 'error');
-            playErrorSound();
-        }
-        this.value = '';
-    }
-});
-    </script>
 </body>
 </html>
