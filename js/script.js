@@ -204,6 +204,13 @@ async function readBarcode() {
     }
 }
 
+function formatBarcode(rawBarcode) {
+    const lastFourDigits = rawBarcode.slice(-4);
+    const formattedBarcode = rawBarcode.replace(lastFourDigits, `<span class="bold">${lastFourDigits}</span>`);
+    return formattedBarcode;
+}
+
+
 function sendToWhatsApp() {
     const whatsappMessage = "Códigos lidos: *" + detectedBarcodes.length + "*\n\n" + detectedBarcodes.join("\n");
     window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(whatsappMessage), "_blank");
