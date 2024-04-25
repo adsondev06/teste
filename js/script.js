@@ -6,15 +6,15 @@ const codeInput = document.getElementById('codeInput');
 let detectedBarcodes = [];
 let codeCounter = 0;
 let errorDisplayed = false;
-let video; // Declarando a variável de vídeo fora da função para ser acessível globalmente
+let videoStream; // Variável para armazenar a referência ao stream de vídeo
 
 async function startBarcodeReader() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        video = document.getElementById('video'); // Atribuindo o elemento de vídeo globalmente
-        video.srcObject = stream;
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        const video = document.getElementById('video');
+        video.srcObject = videoStream;
         await video.play();
-        setInterval(readBarcode, 3000); // Escaneia a cada 3 segundos
+        setInterval(readBarcode, 3000);
     } catch (error) {
         console.error('Erro ao iniciar a leitura do código de barras:', error);
         displayMessage('Erro ao iniciar a leitura do código de barras.', 'error');
@@ -24,7 +24,7 @@ async function startBarcodeReader() {
 async function readBarcode() {
     try {
         const barcodeDetector = new BarcodeDetector();
-        const barcodes = await barcodeDetector.detect(video);
+        const barcodes = await barcodeDetector.detect(videoStream); // Usando o stream de vídeo
 
         if (barcodes.length > 0) {
             barcodes.forEach(barcode => {
@@ -99,10 +99,9 @@ document.addEventListener('DOMContentLoaded', function() {
     startBarcodeReader();
 });
 
-// Adicionando evento para capturar o valor digitado no input
 codeInput.addEventListener('change', function() {
     const inputValue = this.value.trim();
-    if (inputValue.length === 15 && !detectedBarcodes.includes(inputValue)) {
+    if (inputValue.length === 10 && !detectedBarcodes.includes(inputValue)) {
         detectedBarcodes.push(inputValue);
         const resultDiv = document.createElement('div');
         const lastFourDigits = inputValue.slice(-4);
@@ -120,5 +119,5 @@ codeInput.addEventListener('change', function() {
         displayMessage('Código inválido ou já lido.', 'error');
         playErrorSound();
     }
-    this.value = ''; // Limpar o input depois de adicionar o código
+    this.value = '';
 });
