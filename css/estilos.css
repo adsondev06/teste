@@ -8,8 +8,7 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-image: linear-gradient(to right bottom, #051937, #004d7a, #008793, #00bf72, #a8eb12);
-
+    background-color: #adadad;
 }
 
  h1 {
@@ -28,7 +27,7 @@ body {
     max-width: 300px;
     height: auto;
     object-fit: cover;
-    border: 2px solid #333;
+    border: 2px solid #000000;
     border-radius: 10px;
 }
 
@@ -65,6 +64,16 @@ body {
     color: #000;
 }
 
+#codeInput {
+    margin-top: 10px;
+   padding: 5px 20px;
+   text-align: center;
+   border: none;
+   border-radius: 5px;
+   font-size: 17px;
+   border: 2px solid;
+}
+
 #sendToWhatsAppButton {
     background-color: green;
     color: #fff;
@@ -87,4 +96,10 @@ span {
 .bold {
     font-weight: bold;
     color: black;
+}
+
+@media only screen and (max-width: 600px) {
+    #codeInput {
+        max-width: 100%;
+    }
 }
