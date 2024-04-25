@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Adicionando evento para capturar o valor digitado no input
 codeInput.addEventListener('change', function() {
     const inputValue = this.value.trim();
-    if (inputValue.length === 10 && !detectedBarcodes.includes(inputValue)) {
+    if (inputValue.length === 15 && !detectedBarcodes.includes(inputValue)) {
         detectedBarcodes.push(inputValue);
         const resultDiv = document.createElement('div');
         const lastFourDigits = inputValue.slice(-4);
