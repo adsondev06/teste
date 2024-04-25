@@ -6,11 +6,12 @@ const codeInput = document.getElementById('codeInput');
 let detectedBarcodes = [];
 let codeCounter = 0;
 let errorDisplayed = false;
+let video; // Declarando a variável de vídeo fora da função para ser acessível globalmente
 
 async function startBarcodeReader() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        const video = document.getElementById('video');
+        video = document.getElementById('video'); // Atribuindo o elemento de vídeo globalmente
         video.srcObject = stream;
         await video.play();
         setInterval(readBarcode, 3000); // Escaneia a cada 3 segundos
