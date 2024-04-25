@@ -1,5 +1,5 @@
 const barcodeResults = document.getElementById('barcode-results');
-const codeCount = document.getElementById('codeCount');
+const codeCount = document.getElementById('count');
 const successSound = document.getElementById('successSound');
 const errorSound = document.getElementById('errorSound');
 let detectedBarcodes = [];
@@ -12,51 +12,60 @@ async function startBarcodeReader() {
         const video = document.getElementById('video');
         video.srcObject = stream;
         await video.play();
-        console.log("Câmera ativada com sucesso!");
-
-        Quagga.init({
-            inputStream: {
-                name: "Live",
-                type: "LiveStream",
-                target: video
-            },
-            decoder: {
-                readers: ["ean_reader"]
-            }
-        }, function (err) {
-            if (err) {
-                console.error('Erro ao inicializar o Quagga:', err);
-                displayMessage('Erro ao iniciar a leitura do código de barras.', 'error');
-                return;
-            }
-            console.log("Quagga inicializado com sucesso!");
-            Quagga.start();
-        });
-
-        Quagga.onDetected(function (data) {
-            const code = data.codeResult.code;
-            if (code.length === 10 && !detectedBarcodes.includes(code)) {
-                detectedBarcodes.push(code);
-                const lastFourDigits = code.slice(-4);
-                const formattedBarcode = code.replace(lastFourDigits, `<span class="bold">${lastFourDigits}</span>`);
-                const resultDiv = document.createElement('div');
-                resultDiv.innerHTML = "Lido com sucesso: " + formattedBarcode;
-                resultDiv.classList.add('success');
-                barcodeResults.appendChild(resultDiv);
-                codeCount.textContent = detectedBarcodes.length;
-                playSuccessSound();
-                codeCounter++;
-                if (codeCounter % 2 === 0) {
-                    barcodeResults.style.overflowY = 'scroll';
-                }
-            }
-        });
-
+        setInterval(readBarcode, 3000); // Escaneia a cada 3 segundos
     } catch (error) {
         console.error('Erro ao iniciar a leitura do código de barras:', error);
         displayMessage('Erro ao iniciar a leitura do código de barras.', 'error');
     }
 }
+
+async function readBarcode() {
+    try {
+        const barcodeDetector = new BarcodeDetector();
+        const barcodes = await barcodeDetector.detect(video);
+
+        if (barcodes.length > 0) {
+            barcodes.forEach(barcode => {
+                if (barcode.rawValue.length === 10) {
+                    if (detectedBarcodes.includes(barcode.rawValue)) {
+                        if (!errorDisplayed) {
+                            displayMessage('Código de barras já lido.', 'error');
+                            playErrorSound();
+                            errorDisplayed = true;
+                        }
+                    } else {
+                        if (errorDisplayed) {
+                            clearError();
+                        }
+                        detectedBarcodes.push(barcode.rawValue);
+                        const resultDiv = document.createElement('div');
+                        const lastFourDigits = barcode.rawValue.slice(-4);
+                        const formattedBarcode = barcode.rawValue.replace(lastFourDigits, `<span class="bold">${lastFourDigits}</span>`);
+                        resultDiv.innerHTML = "Lido com sucesso: " + formattedBarcode;
+                        resultDiv.classList.add('success');
+                        barcodeResults.appendChild(resultDiv);
+                        codeCount.textContent = detectedBarcodes.length;
+                        playSuccessSound();
+                        codeCounter++;
+                        if (codeCounter === 3) {
+                            barcodeResults.style.overflowY = 'scroll';
+                        }
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao detectar código de barras:', error);
+        displayMessage('Erro ao detectar código de barras.', 'error');
+    }
+}
+
+function formatBarcode(rawBarcode) {
+    const lastFourDigits = rawBarcode.slice(-4);
+    const formattedBarcode = rawBarcode.replace(lastFourDigits, `<span class="bold">${lastFourDigits}</span>`);
+    return formattedBarcode;
+}
+
 
 function sendToWhatsApp() {
     const whatsappMessage = "Códigos lidos: *" + detectedBarcodes.length + "*\n\n" + detectedBarcodes.join("\n");
@@ -79,6 +88,14 @@ function displayMessage(message, type) {
     barcodeResults.scrollTop = barcodeResults.scrollHeight;
 }
 
+function clearError() {
+    const errorDiv = document.querySelector('.error');
+    if (errorDiv) {
+        errorDiv.remove();
+        errorDisplayed = false;
+    }
+}
+
 function reloadPage() {
     window.location.reload();
 }
@@ -86,3 +103,30 @@ function reloadPage() {
 document.addEventListener('DOMContentLoaded', function() {
     startBarcodeReader();
 });
+
+const codeInput = document.getElementById('codeInput');
+
+codeInput.addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+        const inputValue = this.value.trim();
+        if (inputValue.length > 0 && !detectedBarcodes.includes(inputValue)) {
+            detectedBarcodes.push(inputValue);
+            const resultDiv = document.createElement('div');
+            resultDiv.textContent = "Digitado manualmente: " + inputValue;
+            resultDiv.classList.add('success');
+            barcodeResults.appendChild(resultDiv);
+            codeCount.textContent = detectedBarcodes.length;
+            playSuccessSound();
+            codeCounter++;
+            if (codeCounter === 2) {
+                barcodeResults.style.overflowY = 'scroll';
+            }
+        } else {
+            displayMessage('Valor inválido ou já inserido.', 'error');
+            playErrorSound();
+        }
+        this.value = '';
+    }
+});
+
+
