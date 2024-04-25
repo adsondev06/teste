@@ -6,7 +6,7 @@ const codeInput = document.getElementById('codeInput');
 let detectedBarcodes = [];
 let codeCounter = 0;
 let errorDisplayed = false;
-let videoStream; // Variável para armazenar a referência ao stream de vídeo
+let videoStream;
 
 async function startBarcodeReader() {
     try {
@@ -24,7 +24,7 @@ async function startBarcodeReader() {
 async function readBarcode() {
     try {
         const barcodeDetector = new BarcodeDetector();
-        const barcodes = await barcodeDetector.detect(videoStream); // Usando o stream de vídeo
+        const barcodes = await barcodeDetector.detect(videoStream);
 
         if (barcodes.length > 0) {
             barcodes.forEach(barcode => {
@@ -99,14 +99,12 @@ document.addEventListener('DOMContentLoaded', function() {
     startBarcodeReader();
 });
 
-codeInput.addEventListener('change', function() {
+codeInput.addEventListener('input', function() {
     const inputValue = this.value.trim();
-    if (inputValue.length === 15 && !detectedBarcodes.includes(inputValue)) {
+    if (inputValue.length > 0 && !detectedBarcodes.includes(inputValue)) {
         detectedBarcodes.push(inputValue);
         const resultDiv = document.createElement('div');
-        const lastFourDigits = inputValue.slice(-4);
-        const formattedBarcode = inputValue.replace(lastFourDigits, `<span class="bold">${lastFourDigits}</span>`);
-        resultDiv.innerHTML = "Digitado manualmente: " + formattedBarcode;
+        resultDiv.textContent = "Digitado manualmente: " + inputValue;
         resultDiv.classList.add('success');
         barcodeResults.appendChild(resultDiv);
         codeCount.textContent = detectedBarcodes.length;
@@ -116,7 +114,7 @@ codeInput.addEventListener('change', function() {
             barcodeResults.style.overflowY = 'scroll';
         }
     } else {
-        displayMessage('Código inválido ou já lido.', 'error');
+        displayMessage('Valor inválido ou já inserido.', 'error');
         playErrorSound();
     }
     this.value = '';
