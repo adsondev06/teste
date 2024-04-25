@@ -191,7 +191,7 @@ async function readBarcode() {
                         codeCount.textContent = detectedBarcodes.length;
                         playSuccessSound();
                         codeCounter++;
-                        if (codeCounter === 3) {
+                        if (codeCounter === 2) {
                             barcodeResults.style.overflowY = 'scroll';
                         }
                     }
