@@ -143,20 +143,11 @@ let video;
 async function startBarcodeReader() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        const videoConstraints = { facingMode: "environment" };
-        if (navigator.mediaDevices.enumerateDevices) {
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter(device => device.kind === 'videoinput');
-            const rearCamera = videoDevices.find(device => device.label.includes('back') || device.label.includes('rear'));
-            if (rearCamera) {
-                videoConstraints.deviceId = { exact: rearCamera.deviceId };
-            }
-        }
         video = document.getElementById('video');
         video.srcObject = stream;
         await video.play();
         console.log("Câmera ativada com sucesso!");
-        setInterval(readBarcode, 3000);
+        setInterval(readBarcode, 3000); // Escaneia a cada 3 segundos
     } catch (error) {
         console.error('Erro ao iniciar a leitura do código de barras:', error);
         displayMessage('Erro ao iniciar a leitura do código de barras.', 'error');
@@ -168,48 +159,29 @@ async function readBarcode() {
         const barcodeDetector = new BarcodeDetector();
         const barcodes = await barcodeDetector.detect(video);
 
-        if (barcodes.length > 0) {
-            barcodes.forEach(barcode => {
-                if (barcode.rawValue.length === 10) {
-                    if (detectedBarcodes.includes(barcode.rawValue)) {
-                        if (!errorDisplayed) {
-                            displayMessage('Código de barras já lido.', 'error');
-                            playErrorSound();
-                            errorDisplayed = true;
-                        }
-                    } else {
-                        if (errorDisplayed) {
-                            clearError();
-                        }
-                        detectedBarcodes.push(barcode.rawValue);
-                        const resultDiv = document.createElement('div');
-                        const lastFourDigits = barcode.rawValue.slice(-4);
-                        const formattedBarcode = barcode.rawValue.replace(lastFourDigits, `<span class="bold">${lastFourDigits}</span>`);
-                        resultDiv.innerHTML = "Lido com sucesso: " + formattedBarcode;
-                        resultDiv.classList.add('success');
-                        barcodeResults.appendChild(resultDiv);
-                        codeCount.textContent = detectedBarcodes.length;
-                        playSuccessSound();
-                        codeCounter++;
-                        if (codeCounter === 2) {
-                            barcodeResults.style.overflowY = 'scroll';
-                        }
-                    }
+        for (const barcode of barcodes) {
+            const rawValue = barcode.rawValue;
+            if (rawValue.length === 10 && !detectedBarcodes.includes(rawValue)) {
+                detectedBarcodes.push(rawValue);
+                const lastFourDigits = rawValue.slice(-4);
+                const formattedBarcode = rawValue.replace(lastFourDigits, `<span class="bold">${lastFourDigits}</span>`);
+                const resultDiv = document.createElement('div');
+                resultDiv.innerHTML = "Lido com sucesso: " + formattedBarcode;
+                resultDiv.classList.add('success');
+                barcodeResults.appendChild(resultDiv);
+                codeCount.textContent = detectedBarcodes.length;
+                playSuccessSound();
+                codeCounter++;
+                if (codeCounter % 2 === 0) {
+                    barcodeResults.style.overflowY = 'scroll';
                 }
-            });
+            }
         }
     } catch (error) {
         console.error('Erro ao detectar código de barras:', error);
         displayMessage('Erro ao detectar código de barras.', 'error');
     }
 }
-
-function formatBarcode(rawBarcode) {
-    const lastFourDigits = rawBarcode.slice(-4);
-    const formattedBarcode = rawBarcode.replace(lastFourDigits, `<span class="bold">${lastFourDigits}</span>`);
-    return formattedBarcode;
-}
-
 
 function sendToWhatsApp() {
     const whatsappMessage = "Códigos lidos: *" + detectedBarcodes.length + "*\n\n" + detectedBarcodes.join("\n");
@@ -260,7 +232,10 @@ codeInput.addEventListener('keyup', function(event) {
             codeCount.textContent = detectedBarcodes.length;
             playSuccessSound();
             codeCounter++;
-            if (codeCounter === 2) {
+            if (codeCounter % 2 === 0) {
+                barcodeResults.style.overflowY = 'scroll';
+            }
+            if (codeCounter === 3) {
                 barcodeResults.style.overflowY = 'scroll';
             }
         } else {
