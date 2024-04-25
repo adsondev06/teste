@@ -10,11 +10,14 @@
 <body> 
     <h1>Coletor de código</h1>
     <p class="alerta">Se não iniciar a leitura, atualize a página!</p>
-    <video id="video" playsinline></video>
-    <div id="barcode-results"></div>
+    <!-- Adicionando o input de número com o placeholder desejado -->
+    <input type="number" id="codeInput" placeholder="Não conseguiu ler? Digite aqui">
+
+    <div id="barcode-results">
+        <!-- Aqui ficarão os códigos lidos -->
+    </div>
     <p id="codeCount">Códigos lidos: <span id="count">0</span></p>
     <div class="button-container">
-        <button id="reloadButton" class="button" onclick="reloadPage()">Atualizar Página</button>
         <button id="sendToWhatsAppButton" class="button" onclick="sendToWhatsApp()">Enviar para WhatsApp</button>
     </div>
 
