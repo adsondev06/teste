@@ -74,9 +74,7 @@ async function startBarcodeReader() {
                     facingMode: "environment"
                 },
             },
-            decoder: {
-                readers: ["ean_reader", "ean_8_reader", "code_39_reader", "code_39_vin_reader", "codabar_reader", "upc_reader", "upc_e_reader", "i2of5_reader"]
-            }
+            
         }, function (err) {
             if (err) {
                 console.error('Erro ao inicializar Quagga:', err);
