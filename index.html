@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -17,6 +17,37 @@
     <div class="button-container">
         <button id="sendToWhatsAppButton" class="button" onclick="sendToWhatsApp()">Enviar Código</button>
     </div>
+
+    <audio id="successSound" src="audio/sucesso.mp3"></audio>
+    <audio id="errorSound" src="audio/error-126627.mp3"></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/estilos.css">
+    <title>Coletor</title>
+</head>
+
+<body>
+    <p class="alerta">Se não iniciar a leitura, atualize a página!</p>
+    <form id="form" action="seu_arquivo_php.php" method="post">
+        <video id="video" playsinline></video>
+        <input type="number" name="codigo" id="codeInput" placeholder="Não escaneou? Digite aqui"/>
+        <input type="text" name="nome" id="nomeInput" placeholder="Digite seu nome"/>
+        <div id="barcode-results"></div>
+        <div id="codeCount">Códigos lidos: <span id="count">0</span></div>
+        <div class="button-container">
+            <button id="sendToWhatsAppButton" class="button" onclick="sendToWhatsApp()">Enviar Código</button>
+        </div>
+    </form>
 
     <audio id="successSound" src="audio/sucesso.mp3"></audio>
     <audio id="errorSound" src="audio/error-126627.mp3"></audio>
