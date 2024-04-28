@@ -10,13 +10,12 @@
 <body>
     <p class="alerta">Se não iniciar a leitura, atualize a página!</p>
     <video id="video" playsinline></video>
-    <input type="text" name="nome" id="nomeInput" placeholder="Digite seu nome aqui">
-    <input type="number" name="codigo" id="codeInput" placeholder="Não escaneou, digite aqui"/>
+    <input type="number" name="codigo" id="codeInput" placeholder="Não escaneou? Digite aqui"/>
+    <input type="text" name="nome" id="nomeInput" placeholder="Digite seu nome"/>
     <div id="barcode-results"></div>
     <p id="codeCount">Códigos lidos: <span id="count">0</span></p>
     <div class="button-container">
-        <button id="reloadButton" class="button" onclick="reloadPage()">Atualizar Página</button>
-        <button id="sendToWhatsAppButton" class="button" onclick="sendToGoogle()">Enviar Código</button>
+        <button id="sendToWhatsAppButton" class="button" onclick="sendToWhatsApp()">Enviar Código</button>
     </div>
 
     <audio id="successSound" src="audio/sucesso.mp3"></audio>
